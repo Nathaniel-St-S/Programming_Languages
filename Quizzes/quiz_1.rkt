@@ -35,8 +35,6 @@
     [(> (car nnint) 0)
      (cons (sub1 (car nnint)) (cdr nnint))]
     [else (cons (sub1 N) (pred (cdr nnint)))]))
-    
-
 
 ;; need an accumulator for tracking the depth into the list and multiplication of bases.
 ;; q + (N ** depth) and so on and so on
@@ -48,6 +46,11 @@
         (+ (* (car lon) (expt N pow))
            (helper (cdr lon) (add1 pow)))))
   (helper nnint 0))
+
+(define (dec2nnint num)
+  (cond
+    [(= num 0) '()]
+    [else (cons (modulo num N) (dec2nnint (/ (- num (modulo num N)) N)))]))
   
 ;; (define (nnint2dec nnint N)
 ;;     (if (null? nnint)
