@@ -1,0 +1,3 @@
+download eopl-extras from marco's github to use for class
+
+check-equal?

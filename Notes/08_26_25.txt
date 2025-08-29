@@ -1,0 +1,5 @@
+review animated program design
+everything is structural recursion
+
+seperate interface from implementation
+slides 0 - 22
