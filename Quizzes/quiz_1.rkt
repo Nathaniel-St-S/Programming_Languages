@@ -1,7 +1,14 @@
 #lang eopl
 (require rackunit "../Extras/Marco_Provided_Code/eopl-extras.rkt")
 
-;; quiz #1 on problem 2.1 from Essentials of Programming Languages 3'rd ED,
+;; quiz #1 on question 2.1 from Essentials of Programming Languages 3'rd ED,
+#|
+Exercise 2.1: Implement the four required operations for bigits. Then use your
+implementation to calculate the factorial of 10. How does the execution time vary
+as this argument changes? How does the execution time vary as the base changes?
+Explain why.
+|#
+
 ;; implementing nnint2dec and dec2nnint for bigits.
 ;; Numbers are represented in base N (large N)
 ;; The reprsentation uses a list of numbers such that each number is in 0...N-1 (called bigits)
@@ -67,11 +74,16 @@
     [else (cons (modulo num N) (dec2nnint (/ (- num (modulo num N)) N)))]))
 
 ;; nnint nnint --> nnint
-;; return the sum of the given two nnint
+;; Purpose: Return the sum of the given two nnint
 (define (plus nnint1 nnint2)
   (if (iszero? nnint1)
       nnint2
       (plus (pred nnint1) (succ nnint2))))
+
+;; number --> number
+;; Purpose: Calculate the factorial of the given number
+;;(define (factorial num)
+  
   
 ; Tests
 ;; Tests for (zero)
