@@ -1,9 +1,10 @@
 #lang eopl
-(require "eopl-extras.rkt")
+(require rackunit "../Extras/Marco_Provided_Code/eopl-extras.rkt")
 
 
 
-;; quiz #1 on problem 2.1 from the book, implementing nnint2dec and dec2nnint for bigits.
+;; quiz #1 on problem 2.1 from Essentials of Programming Languages 3'rd ED,
+;; implementing nnint2dec and dec2nnint for bigits.
 ;; Numbers are represented in base N (large N)
 ;; The reprsentation uses a list of numbers such that each number is in 0...N-1 (called bigits)
 ;; zero, iszero?, succ, pred, nnint2dec, dec2nnint plus sub factorial
@@ -15,6 +16,7 @@
 ;; and q is q * N where N is the base (big N)
 
 (define N 100)
+(define fact 3628800)
 
 (define (zero) '() )
 
@@ -51,6 +53,42 @@
   (cond
     [(= num 0) '()]
     [else (cons (modulo num N) (dec2nnint (/ (- num (modulo num N)) N)))]))
+
+;; Tests
+
+;; Tests for (zero)
+(check-equal? (zero) '() "'() is not equal to (zero)")
+(check-not-equal? (zero) 0 "0 is equal to (zero)")
+(check-not-equal? (zero) '(0) "'(0) is equal to (zero)")
+
+;; Tests for (iszero?)
+(check-true (iszero? '()) "'() is not zero")
+(check-false (iszero? '(50)) "'(50) is zero")
+
+;;Tests for (succ)
+(check-equal? (succ (zero)) '(1)) "The succesor of (zero) is not '(1)"
+(check-equal? (succ '((sub1 N))) '(0 1))
+(check-equal? (succ '(20 0 19)) '(21 0 19))
+
+;;Tests for (pred)
+(check-exn "0 does not have a predecessor" (pred (zero)))
+(check-equal? (zero) (pred '(1)) "The predecessor of '(1) is not (zero)")
+(check-equal? (zero) (pred '(0)) "I honestly dk what to expext with this")
+(check-equal? '(20 0 19) (pred '(21 0 19)))
+(check-equal? '((sub1 N)) (pred '(0 1)))
+
+
+;; Q's for Andres
+;; The test on line 74 raises the no pred for 0 error, so now my program
+;;   has two valid forms of (zero), how would i fix this?
+;;   Example: (check-equal? (zero) (pred '(0)) "I honestly dk what to expext with this")
+
+;; Should i check that the nnint is formated properly in my function
+
+;; Should i test for negative numbers in my test?
+
+;; Detritus
+#|````````````````````````````````````````````````````````````|#
   
 ;; (define (nnint2dec nnint N)
 ;;     (if (null? nnint)
