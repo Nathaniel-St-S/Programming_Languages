@@ -13,13 +13,24 @@
 ;; where r is greater than or equal to zero and less than N,
 ;; and q is q * N where N is the base (big N)
 
+;; --> N
+;; Purpose: Define the base (big N)
 (define N 100)
+
+;; --> dec
+;; Purpose: Define the value of 10!
 (define fact 3628800)
 
+;; --> nnint
+;; Purpose: Construct zero
 (define (zero) '() )
 
+;; nnint --> bool
+;; Purpose: Determine if the given nnint is zero
 (define (iszero? nnint) (null? nnint))
 
+;; nnint --> nnint
+;; Purpose: Return the successor of a given nnint
 (define (succ nnint)
   (cond
     [(iszero? nnint) '(1)]
@@ -27,6 +38,8 @@
      (cons (add1 (car nnint)) (cdr nnint)) ]
     [else (cons 0 (succ (cdr nnint)))]))
 
+;; nnint --> nnint
+;; Purpose: Return the predecessor of the given nnint
 (define (pred nnint)
   (cond
     [(iszero? nnint) (eopl:error 'pred-on-zero "(zero) does not have a predecessor")]
@@ -36,9 +49,8 @@
      (cons (sub1 (car nnint)) (cdr nnint))]
     [else (cons (sub1 N) (pred (cdr nnint)))]))
 
-;; need an accumulator for tracking the depth into the list and multiplication of bases.
-;; q + (N ** depth) and so on and so on
-;; can use map and fold to apply helper function to each number, then sum them all.virtua
+;; nnint --> number
+;; Purpose: Contruct the decimal representation of the given nnint
 (define (nnint2dec nnint)
   (define (helper lon pow)
     (if (null? lon)
@@ -47,18 +59,21 @@
            (helper (cdr lon) (add1 pow)))))
   (helper nnint 0))
 
+;; number --> nnint
+;; Purpose: Construct the nnint representation of the given decimal num
 (define (dec2nnint num)
   (cond
     [(= num 0) '()]
     [else (cons (modulo num N) (dec2nnint (/ (- num (modulo num N)) N)))]))
 
+;; nnint nnint --> nnint
+;; return the sum of the given two nnint
 (define (plus nnint1 nnint2)
   (if (iszero? nnint1)
       nnint2
       (plus (pred nnint1) (succ nnint2))))
   
-;; Tests
-
+; Tests
 ;; Tests for (zero)
 (check-equal? (zero) '() "'() is not equal to (zero)")
 (check-not-equal? (zero) 0 "0 is equal to (zero)")
@@ -68,32 +83,36 @@
 (check-true (iszero? '()) "'() is not zero")
 (check-false (iszero? '(50)) "'(50) is zero")
 
-;;Tests for (succ)
+;; Tests for (succ)
 (check-equal? (succ (zero)) '(1))
 (check-equal? (succ (list(sub1 N))) '(0 1))
 (check-equal? (succ '(20 0 19)) '(21 0 19))
 
-;;Tests for (pred)
+;; Tests for (pred)
 (check-exn #rx"pred-on-zero" (lambda () (pred (zero))))
 (check-equal? (pred '(1)) (zero) "The predecessor of '(1) is not (zero)")
 (check-equal? (pred '(0)) (zero) "I honestly dk what to expext with this")
 (check-equal? '(20 0 19) (pred '(21 0 19)))
 (check-equal? (list(sub1 N)) (pred '(0 1)))
 
-;;Tests for nnint2dec
+;; Tests for nnint2dec
 (check-equal? (nnint2dec (zero)) 0)
 (check-equal? (nnint2dec '(0 1)) N)
 (check-equal? (nnint2dec '(0 13)) (* 13 N))
 (check-equal? (nnint2dec '(0 0 0 1)) (expt N 3))
 (check-equal? (nnint2dec '(24 15 78)) 781524)
 
-;;Tests for dec2nnint
+;; Tests for dec2nnint
 (check-equal? (dec2nnint 0) (zero))
 (check-equal? (dec2nnint N) '(0 1))
 (check-equal? (dec2nnint (* 50 N)) '(0 50))
 (check-equal? (dec2nnint (expt N 2)) '(0 0 1))
 (check-equal? (dec2nnint 781524) '(24 15 78))
 
+;; Tests for plus
+(check-equal? (plus '(0 0 1) '(0 1)) '(0 1 1))
+(check-equal? (plus '(1) (zero)) '(1))
+(check-equal? (plus (zero) '(1)) '(1))
 
 ;; Q's for Andres
 ;; Why does (succ/pred (list(sub1 N)) work for the tests but not '(succ/pred '((sub1 N)))
