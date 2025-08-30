@@ -1,8 +1,6 @@
 #lang eopl
 (require rackunit "../Extras/Marco_Provided_Code/eopl-extras.rkt")
 
-
-
 ;; quiz #1 on problem 2.1 from Essentials of Programming Languages 3'rd ED,
 ;; implementing nnint2dec and dec2nnint for bigits.
 ;; Numbers are represented in base N (large N)
@@ -25,14 +23,14 @@
 (define (succ nnint)
   (cond
     [(iszero? nnint) '(1)]
-    [(< car (sub1 N))
+    [(< (car nnint) (sub1 N))
      (cons (add1 (car nnint)) (cdr nnint)) ]
     [else (cons 0 (succ (cdr nnint)))]))
 
 (define (pred nnint)
   (cond
-    [(iszero? nnint) (eopl:error "0 does not have a predecessor")]
-    [(and (null? cdr) (= (car nnint) 1))
+    [(iszero? nnint) (eopl:error 'pred-on-zero "(zero) does not have a predecessor")]
+    [(and (null? (cdr nnint)) (= (car nnint) 1))
      (zero)]
     [(> (car nnint) 0)
      (cons (sub1 (car nnint)) (cdr nnint))]
@@ -54,6 +52,11 @@
     [(= num 0) '()]
     [else (cons (modulo num N) (dec2nnint (/ (- num (modulo num N)) N)))]))
 
+(define (plus nnint1 nnint2)
+  (if (iszero? nnint1)
+      nnint2
+      (plus (pred nnint1) (succ nnint2))))
+  
 ;; Tests
 
 ;; Tests for (zero)
@@ -66,19 +69,34 @@
 (check-false (iszero? '(50)) "'(50) is zero")
 
 ;;Tests for (succ)
-(check-equal? (succ (zero)) '(1)) "The succesor of (zero) is not '(1)"
-(check-equal? (succ '((sub1 N))) '(0 1))
+(check-equal? (succ (zero)) '(1))
+(check-equal? (succ (list(sub1 N))) '(0 1))
 (check-equal? (succ '(20 0 19)) '(21 0 19))
 
 ;;Tests for (pred)
-(check-exn "0 does not have a predecessor" (pred (zero)))
-(check-equal? (zero) (pred '(1)) "The predecessor of '(1) is not (zero)")
-(check-equal? (zero) (pred '(0)) "I honestly dk what to expext with this")
+(check-exn #rx"pred-on-zero" (lambda () (pred (zero))))
+(check-equal? (pred '(1)) (zero) "The predecessor of '(1) is not (zero)")
+(check-equal? (pred '(0)) (zero) "I honestly dk what to expext with this")
 (check-equal? '(20 0 19) (pred '(21 0 19)))
-(check-equal? '((sub1 N)) (pred '(0 1)))
+(check-equal? (list(sub1 N)) (pred '(0 1)))
+
+;;Tests for nnint2dec
+(check-equal? (nnint2dec (zero)) 0)
+(check-equal? (nnint2dec '(0 1)) N)
+(check-equal? (nnint2dec '(0 13)) (* 13 N))
+(check-equal? (nnint2dec '(0 0 0 1)) (expt N 3))
+(check-equal? (nnint2dec '(24 15 78)) 781524)
+
+;;Tests for dec2nnint
+(check-equal? (dec2nnint 0) (zero))
+(check-equal? (dec2nnint N) '(0 1))
+(check-equal? (dec2nnint (* 50 N)) '(0 50))
+(check-equal? (dec2nnint (expt N 2)) '(0 0 1))
+(check-equal? (dec2nnint 781524) '(24 15 78))
 
 
 ;; Q's for Andres
+;; Why does (succ/pred (list(sub1 N)) work for the tests but not '(succ/pred '((sub1 N)))
 ;; The test on line 74 raises the no pred for 0 error, so now my program
 ;;   has two valid forms of (zero), how would i fix this?
 ;;   Example: (check-equal? (zero) (pred '(0)) "I honestly dk what to expext with this")
